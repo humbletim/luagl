@@ -881,7 +881,7 @@ class LuaGLU {
     }
     
     static int lua_gluBuild2DMipmaps(lua_State *L) {
-      CHECK_ARG_COUNT(L, 6);
+      CHECK_ARG_COUNT(L, 7);
       Enum tgt(L, 1);
       Int comp(L, 2);
       Int w(L, 3);
