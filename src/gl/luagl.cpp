@@ -114,7 +114,7 @@ static int luagl_index(lua_State *L) {
       lua_pushnumber(L, gl.getVersion());
 
     } else {
-      lua_pushstring(L, "Invalid entry");
+      lua_pushfstring(L, "(gl) Invalid entry: %s", key);
       lua_error(L);
     }
   } else {

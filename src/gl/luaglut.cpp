@@ -630,7 +630,7 @@ class LuaGLUT {
           void *p = glut.getPtr(key);
 
           if (p == PTR_ERROR) {
-            lua_pushstring(L, "Invalid entry");
+            lua_pushfstring(L, "(glut) Invalid entry: %s", key);
             lua_error(L);
 
           } else {

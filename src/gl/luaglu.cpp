@@ -724,7 +724,7 @@ class LuaGLU {
           lua_pushnumber(L, GLU_TESS_MAX_COORD);
           return 1;
         } else {
-          lua_pushstring(L, "Invalid entry");
+		  lua_pushfstring(L, "(glu) Invalid entry: %s", key);
           lua_error(L);
         }
       }
