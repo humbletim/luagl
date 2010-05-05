@@ -1,0 +1,62 @@
+(BRAIN DUMP): cross-compile luagl for windows (using only linux)
+
+Mingw-w32 (i686) ToolChain
+ * downloaded w32 cross-compiler binaries http://www.drangon.org/mingw/
+
+GLUT for Win32 version 3.7.6
+ * downloaded binaries from http://www.xmission.com/~nate/glut.html
+
+GLEW for Win32 version 1.5.4
+* http://glew.sourceforge.net/ | glew-1.5.4-win32.zip
+
+OPENGL32.LIB / GLU32.LIB 
+* ?? likely in MSVC++ Express Edition / MS Platform SDKs (I had from MSVC6)
+
+LUA 5.1.4 for Win32
+* I built from src using the above ToolChain (fought with Makefiles / generic)
+* http://code.google.com/p/luaforwindows/ might also work
+* may need to change -llua to -llua51 if using lua51.dll to link
+
+scons stuff
+  SConstruct: Changed ".so"'s to ".dll"'s
+  SConstruct: removed '+ ["src/gl/glew.c"]' and # "defs" GLEW_ 
+  SConstruct: within "luagl" prj add '"libs" : ["glew"]'
+  SConstruct: added CXX like this:
+      env = excons.MakeBaseEnv()
+  +   env['CXX'] = '{path to toolchain}/bin/i686-w64-mingw32-g++'
+
+  excons/__init__.py:61:      env.Append(CCFLAGS="-I{your LUA path}/include/lua5.1")
+  excons/__init__.py:62:      env.Append(LINKFLAGS="-L{your LUA libs}/lib/")
+  excons/__init__.py:71:      env.Append(CCFLAGS="-I{your LUA path}/include/lua5.1")
+  excons/__init__.py:72:      env.Append(LINKFLAGS="-L{your LUA libs}/lib/")
+
+$ # this dir was already in scons -L path so an easy bucket to use
+$ mkdir -p release/x86/lib
+
+$ # renaming these made scons work without any more mingw32-specific changes
+$ #   (note: this mingw32 results in scons Platform() == 'posix'??)
+$ cp OPENGL32.LIB release/x86/lib/GL.lib
+$ cp GLU32.LIB release/x86/lib/GLU.lib
+$ cp glew32.dll release/x86/lib/glew.dll #.lib didn't work, .dll does as-is
+$ cp glew.h include/
+$ cp glut32.lib release/x86/lib/glut.lib
+$ cp glut.h include/GL/
+$ scons
+$ # hopefully it compiled!
+
+FINAL FILES NEEDED FOR RUNTIME (32bit, but tested on XP x86 / Windows 7 x64)
+  lua.exe / lua51.dll
+  glew32.dll
+  glut32.dll
+  luabitop.dll
+  luagl.dll
+  luaraw.dll 
+  (opengl32.dll and glu32.dll should be part of your WINDOWS install already)
+
+NOTE: your video card needs opengl support of course.
+my XP x86 card reported gl.version 1.1 (via luagl)
+my Win7 x64 card reported  gl.version 2.1 (via luagl)
+
+I tested by porting http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=23
+specifically, the Linux/SDL version (I am also using luaSDL)
+
